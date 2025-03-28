@@ -40,6 +40,12 @@ cp urls.txt.example urls.txt
 
 5. Add your URLs to `urls.txt`, one URL per line. Lines starting with '#' are treated as comments and will be ignored.
 
+6. Run the app
+
+```bash
+python main.py
+```
+
 ## Requirements
 - Python 3.8+ (for walrus operator)
 - requests library
@@ -57,7 +63,6 @@ cp urls.txt.example urls.txt
 ### Timeout Setting
 - The default timeout for URL checks is 5 seconds
 - You can modify the `TIMEOUT` constant in `main.py` to adjust this
-
 
 ## Performance Notes
 - Uses concurrent.futures.ThreadPoolExecutor for parallel requests
