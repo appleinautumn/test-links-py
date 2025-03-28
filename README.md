@@ -1,38 +1,63 @@
-# URL Health Checker
+# URL Status Checker
 
-A high-performance Python script for bulk URL status checking using parallel processing.
+A Python script that checks the status of URLs in parallel using ThreadPoolExecutor. It reports any URLs that are not returning a successful (200) status code.
 
 ## Features
-- Multi-threaded URL checking with `ThreadPoolExecutor`
+
+- Parallel URL checking for improved performance
 - Configurable timeout settings
-- Automatic redirect following
-- Type hints for better code clarity
-- Error reporting for:
-  - Non-200 status codes
-  - Connection errors
-  - Timeouts
-- Clean console output of problematic URLs
+- URLs stored in a separate configuration file
+- Skips empty lines and comments in the URL file
+- Reports only problematic URLs
+
+## Setup
+
+1. Clone the repository:
+
+```bash
+git clone git@github.com:appleinautumn/test-links-py.git
+cd test-links-py
+```
+
+2. Create a virtual environment and activate it:
+
+```bash
+python -m venv venv
+source venv/bin/activate
+```
+
+3. Install dependencies:
+
+```bash
+pip install -r requirements.txt
+```
+
+4. Create your URLs file:
+
+```bash
+cp urls.txt.example urls.txt
+```
+
+5. Add your URLs to `urls.txt`, one URL per line. Lines starting with '#' are treated as comments and will be ignored.
 
 ## Requirements
 - Python 3.8+ (for walrus operator)
 - requests library
 
-## Installation
-
-```bash
-. venv/bin/activate
-python main.py
-```
-
 ## Configuration
-Modify these top-level variables in `main.py`:
-- `TIMEOUT`: Set request timeout in seconds (default: 5)
-- `urls`: Update the list of URLs to check
-- `allow_redirects`: Change in check_url parameters if needed (default: True)
 
-## Usage
-1. Edit the `urls` list in `main.py`
-2. Run the script:
+### URLs File
+- The URLs to check should be stored in `urls.txt`
+- Each URL should be on a new line
+- Lines starting with '#' are treated as comments
+- Empty lines are ignored
+- `urls.txt` is git-ignored, so you can maintain different URL lists in different environments
+- Use `urls.txt.example` as a template
+
+### Timeout Setting
+- The default timeout for URL checks is 5 seconds
+- You can modify the `TIMEOUT` constant in `main.py` to adjust this
+
 
 ## Performance Notes
 - Uses concurrent.futures.ThreadPoolExecutor for parallel requests
@@ -41,4 +66,4 @@ Modify these top-level variables in `main.py`:
 - Add `max_workers` parameter to ThreadPoolExecutor to limit concurrency
 
 ## License
-MIT License - See [LICENSE](LICENSE) for details
+MIT License - free for personal and commercial use

@@ -1,20 +1,20 @@
 import requests
 from concurrent.futures import ThreadPoolExecutor
 from typing import Optional, Tuple
-
-# List of URLs to check
-urls = [
-    "https://linode.com/docs/applications/big-data/how-to-install-and-configure-a-redis-cluster-on-ubuntu-1604/",
-    "https://redis.io/topics/cluster-tutorial",
-    "https://get-reddie.com/blog/redis4-cluster-docker-compose/",
-    "https://www.pushradar.com/blog/5-reasons-why-you-should-use-redis-as-your-web-apps-database",
-    "https://redislabs.com/blog/redis-mysql-fast-economic-scaling/",
-    "https://itnext.io/learn-to-cache-your-nodejs-application-with-redis-in-6-minutes-745a574a9739",
-    "https://redis.com/ebook/part-1-getting-started/chapter-1-getting-to-know-redis/1-1-what-is-redis/"
-]
+from pathlib import Path
 
 # Add timeout parameter at the top
 TIMEOUT = 5  # seconds
+
+def load_urls(filepath: str = 'urls.txt') -> list[str]:
+    """Load URLs from a text file, skipping empty lines and comments."""
+    try:
+        with open(filepath, 'r') as f:
+            return [line.strip() for line in f
+                   if line.strip() and not line.strip().startswith('#')]
+    except FileNotFoundError:
+        print(f"Error: {filepath} not found. Please create it from {filepath}.example")
+        return []
 
 # Function to check if a URL is working
 def check_url(url: str, timeout: float = TIMEOUT) -> Optional[Tuple[str, str]]:
@@ -26,10 +26,18 @@ def check_url(url: str, timeout: float = TIMEOUT) -> Optional[Tuple[str, str]]:
     except requests.RequestException as e:
         return url, f"Error: {e}"
 
-# After (single call per URL)
-with ThreadPoolExecutor() as executor:
-    results = [result for result in executor.map(check_url, urls) if result is not None]
+def main():
+    urls = load_urls()
+    if not urls:
+        return
 
-# Print only the problematic URLs
-for url, status in results:
-    print(f"{url} -> {status}")
+    # Check URLs using ThreadPoolExecutor
+    with ThreadPoolExecutor() as executor:
+        results = [result for result in executor.map(check_url, urls) if result is not None]
+
+    # Print only the problematic URLs
+    for url, status in results:
+        print(f"{url} -> {status}")
+
+if __name__ == "__main__":
+    main()
