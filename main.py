@@ -17,12 +17,12 @@ def load_urls(filepath: str = 'urls.txt') -> list[str]:
         return []
 
 # Function to check if a URL is working
-def check_url(url: str, timeout: float = TIMEOUT) -> Optional[Tuple[str, str]]:
+def check_url(url: str, timeout: float = TIMEOUT) -> Tuple[str, str]:
     try:
         response = requests.head(url, allow_redirects=True, timeout=timeout)
-        # Only return URLs that do not return a 200 status code
-        if response.status_code != 200:
-            return url, f"Error {response.status_code}"
+        if response.status_code == 200:
+            return url, "OK"
+        return url, f"Error {response.status_code}"
     except requests.RequestException as e:
         return url, f"Error: {e}"
 
@@ -33,11 +33,23 @@ def main():
 
     # Check URLs using ThreadPoolExecutor
     with ThreadPoolExecutor() as executor:
-        results = [result for result in executor.map(check_url, urls) if result is not None]
+        results = list(executor.map(check_url, urls))
 
-    # Print only the problematic URLs
+    # Print status for all URLs
+    failed_urls = []
     for url, status in results:
         print(f"{url} -> {status}")
+        if status != "OK":
+            failed_urls.append((url, status))
+
+    # Print summary of failed URLs
+    if failed_urls:
+        print("\nSummary of failed URLs:")
+        print("-" * 40)
+        for url, status in failed_urls:
+            print(f"{url}")
+    else:
+        print("\nAll URLs are working correctly!")
 
 if __name__ == "__main__":
     main()
